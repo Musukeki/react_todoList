@@ -244,21 +244,15 @@ const StyledTitle = styled.h1`
   font-size: 64px;
   font-weight: 400;
 `
-const StyledSearchArea = styled.div`
-  display: flex;
-  justify-content: space-between;
-  font-size: 32px;
-  margin-bottom: 30px;
-`
-
 const StyledInputGroup = styled.div`
   display: flex;
   align-items: center;
-  marginRight: 30px;
+  margin-right: 30px;
   p {
     margin: 0 12px 0 0;
   }
   input {
+    width: 492px;
     padding: 12px 20px;
     border-radius: 15px;
     border: 1px solid #ccc;
@@ -266,6 +260,17 @@ const StyledInputGroup = styled.div`
     background-color: transparent;
   }
 `
+const StyledSearchArea = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: 32px;
+  margin-bottom: 30px;
+
+  ${StyledInputGroup}:nth-child(2) input {
+    width: 225px;
+  }
+`
+
 const StyledBtn = styled.button`
   font-size: 24px;
   padding: 15px 20px;
