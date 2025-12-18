@@ -7,24 +7,26 @@ import { styled } from 'styled-components'
     return <StyledTitle>{ props.title }</StyledTitle>
   }
 
-  function InputGroup(props: { title: string, placeholder: string, onFocus: any, onBlur: any }) {
+  function InputGroup(props: { title: string, placeholder: string, onFocus: any, onBlur: any, onChange: any, type: string, value: string }) {
     return (
       <StyledInputGroup>
         <p>{ props.title }</p>
         <input 
-          type="text"
+          type={ props.type }
           placeholder={ props.placeholder }
           onFocus={ props.onFocus }
-          onBlur={ props.onBlur }/>
+          onBlur={ props.onBlur }
+          onChange={props.onChange}
+          value={props.value}/>
       </StyledInputGroup>
     )
   }
-  function Button(props: { name: string }) {
+  function Button(props: { name: string, onClick: any }) {
     return <StyledBtn>{ props.name }</StyledBtn>
   }
 
   // 彈出視窗
-  function Dialog({ open, close, children }: any) {
+  function Dialog({ open, close, children, deleteFn }: any) {
     if (!open) return null
 
     return  (
@@ -38,7 +40,7 @@ import { styled } from 'styled-components'
             margin: 'auto'
           }}>
             <StyledBtn onClick={close} className='cancelBtn'>取消</StyledBtn>
-            <StyledBtn>確認</StyledBtn>
+            <StyledBtn onClick={deleteFn}>確認</StyledBtn>
           </div>
         </StyledDialog>
       </StyledDialogWrapper>
@@ -65,7 +67,10 @@ import { styled } from 'styled-components'
     }
   ]
 
+
 function App() {
+
+  // useState[值, 改變狀態的方法] = React.useState(初始值)
 
   // 狀態
   // 刪除彈出視窗
@@ -75,8 +80,49 @@ function App() {
   const [focus, setFocus] = React.useState(false)
   const [dateFocus, setDateFocus] = React.useState(false)
 
+  const [todos, setTodos] = React.useState(todoData)
+  const [date, setDate] = React.useState('')
+
+  const [todoToDelete, setTodoToDelete] = React.useState<number | null>(null)
+
+
   // 核取方塊
   const [checkedMap, setCheckedMap] = React.useState<{[key: number]:boolean}>({})
+
+  const [todo, setTodo] = React.useState('')
+  const handleAddTodo = () => {
+    console.log(todo)
+    if(!todo.trim()) {
+      alert('標題不得為空白！！！！！！')
+      return
+    }
+    if(!date.trim()) {
+      alert('日期沒填')
+      return
+    }
+    const regex = /^\d{4}\/\d{2}\/\d{2}$/;
+    if(!regex.test(date)) {
+      alert('日期或格式不對！！！')
+      return
+    }
+    const newTodo = {
+      id: Date.now(),
+      title: todo,
+      date: date
+    }
+    setTodos((prev: any) => [...prev, newTodo])
+    setTodo('')
+    setDate('')
+  }
+
+  const deleteTodo = () => {
+    if (todoToDelete !== null) {
+      setTodos((prev: any) => prev.filter((todo: any) => todo.id !== todoToDelete))
+      setTodoToDelete(null)
+      setOpen(false)
+    }
+  }
+
 
   return (
     <div className="App">
@@ -94,25 +140,34 @@ function App() {
           {/* 輸入區塊 */}
           <StyledSearchArea>
             <InputGroup
+              onChange={(e: any) => setTodo(e.target.value)}
               title='任務'
               placeholder = { focus ? '' : '請輸入你的任務名稱' } 
               onFocus={() => setFocus(true)}
-              onBlur={() => setFocus(false)}/>
+              onBlur={() => setFocus(false)}
+              type='text'
+              value={todo}/>
 
-              <InputGroup
+            <InputGroup
               title='日期'
               placeholder = { dateFocus ? '' : '請輸入日期' } 
               onFocus={() => setDateFocus(true)}
-              onBlur={() => setDateFocus(false)}/>
-            <Button name='Add Task' />
+              onBlur={() => setDateFocus(false)}
+              onChange={(e: any) => setDate(e.target.value)}
+              type='text'
+              value={date}/>
+
+
+            <StyledBtn onClick={ handleAddTodo }>Add Task</StyledBtn>
+
           </StyledSearchArea>
 
           {/* 待辦列表區 */}
           <StyledTodoListArea>
 
-              { todoData.length > 0 ? (todoData.map((item: any) => {
+            <ul>
+              { todos.length > 0 ? (todos.map((item: any) => {
                 return ( 
-                  <ul>
                     <li key={ item.id }>
                   <input 
                     type="checkbox"
@@ -136,18 +191,24 @@ function App() {
                     <img 
                       src="delete.png"
                       alt="刪除"
-                      onClick={() => { setOpen(true)}}
+                      onClick={() => { 
+                        setTodoToDelete(item.id);
+                        setOpen(true)}}
                       className='deleteImg'/>
                     <img src="edit.png" alt="修改"/>
                   </div>
                 </li>
-              </ul>)
-              })) : <p className='emptyText'>趕緊建立你的任務吧！</p>}
+              )
+            })) : <p className='emptyText'>趕緊建立你的任務吧！</p>}
+            </ul>
           </StyledTodoListArea>
         </div>
 
         {/* 彈出視窗 */}
-        <Dialog open={open} close={() => setOpen(false)}>
+        <Dialog 
+          open={open} 
+          close={() => setOpen(false)}
+          deleteFn={deleteTodo}>
           <p style={{
           fontSize: '32px',
           marginTop: '100px',
@@ -169,7 +230,7 @@ export default App;
 
 // styled
 const StyledWrapper = styled.div`
-  width: 1440px;
+  max-width: 1440px;
   height: 1024px;
   margin: 0 auto;
   border: 1px solid #ddd;
