@@ -1,8 +1,8 @@
 import React from "react";
 import { styled } from "styled-components";
-import { DialogProps } from "../Types/types";
+import { DialogDeleteProps } from "../Types/types";
 
-function Dialog({ open, close, onDelete }: DialogProps) {
+function DialogDelete({ open, close, onDelete }: DialogDeleteProps) {
   if (!open) return null;
 
   return (
@@ -40,7 +40,7 @@ function Dialog({ open, close, onDelete }: DialogProps) {
     </StyledDialogWrapper>
   );
 }
-export default Dialog;
+export default DialogDelete;
 
 const StyledBtn = styled.button`
   font-size: 24px;

@@ -14,8 +14,15 @@ export type Todo = {
   checked: boolean;
 };
 
-export type DialogProps = {
+export type DialogDeleteProps = {
   open: boolean;
   close: () => void;
   onDelete: () => void;
+};
+
+export type DialogEditProps = {
+  open: boolean;
+  close: () => void;
+  onEdit: (update: Todo) => void;
+  value: Todo;
 };

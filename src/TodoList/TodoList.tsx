@@ -4,9 +4,10 @@ import { Todo } from "../Types/types";
 type TodoProps = {
   todos: Todo[];
   onOpenDialog: (id: string) => void;
+  onEditDialog: (id: string) => void;
 };
 
-function TodoList({ todos, onOpenDialog }: TodoProps) {
+function TodoList({ todos, onOpenDialog, onEditDialog }: TodoProps) {
   return (
     <ul>
       {todos.length > 0 ? (
@@ -19,14 +20,20 @@ function TodoList({ todos, onOpenDialog }: TodoProps) {
             </div>
             <div className="todoImgs">
               <img
-                src="delete.png"
+                src="/delete.png"
                 alt="刪除"
                 className="deleteImg"
                 onClick={() => {
                   onOpenDialog(todo.id);
                 }}
               />
-              <img src="edit.png" alt="修改" />
+              <img
+                src="/edit.png" //
+                alt="修改" //
+                onClick={() => {
+                  onEditDialog(todo.id);
+                }}
+              />
             </div>
           </li>
         ))

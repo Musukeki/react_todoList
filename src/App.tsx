@@ -2,21 +2,25 @@ import React from "react";
 import axios from "axios";
 import InputGroup from "./InputGroups/InputGroup";
 import TodoList from "./TodoList/TodoList";
-import Dialog from "./Dialog/Dialog";
+import DialogDelete from "./Dialog/DialogDelete";
+import DialogEdit from "./Dialog/DialogEdit";
 import { styled } from "styled-components";
 import { Todo } from "./Types/types";
 
 function App() {
   // states
   const [todos, setTodos] = React.useState<Todo[]>([]);
-  const [stateDialog, setStateDialog] = React.useState<boolean>(false);
+  const [stateDeleteDialog, setStateDeleteDialog] =
+    React.useState<boolean>(false);
   const [deleteTodoId, setDeleteTodoId] = React.useState<null | string>(null);
+  const [stateEditDialog, setStateEditDialog] = React.useState<boolean>(false);
   const [addTodo, setAddTodo] = React.useState<Todo>({
     id: "",
     title: "",
     date: "",
     checked: false,
   });
+  const [editTodo, setEditTodo] = React.useState<Todo | null>(null);
 
   // render when loading
   React.useEffect(() => {
@@ -26,11 +30,22 @@ function App() {
       .catch((err) => console.log(err));
   }, []);
 
-  // when open dialog
-  const openDialog = (id: string) => {
+  // when open delete dialog
+  const openDeleteDialog = (id: string) => {
     setDeleteTodoId(id);
-    setStateDialog(true);
+    setStateDeleteDialog(true);
     console.log(id);
+  };
+
+  // when open edit dialog
+  const openEditDialog = (id: string) => {
+    const target = todos.find((todo) => todo.id === id);
+    if (!target) return;
+
+    console.log(target);
+
+    setEditTodo(target);
+    setStateEditDialog(true);
   };
 
   // delete todo
@@ -41,8 +56,17 @@ function App() {
     }
     setTodos((prev) => prev.filter((todo) => todo.id !== deleteTodoId));
     setDeleteTodoId(null);
-    setStateDialog(false);
+    setStateDeleteDialog(false);
   };
+
+  // edit todo
+  const handleEdit = (updated: Todo) => {
+    setTodos((prev) =>
+      prev.map((todo) => (todo.id === updated.id ? updated : todo))
+    );
+    setStateEditDialog(false);
+  };
+
   // when input content change
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAddTodo({
@@ -84,7 +108,7 @@ function App() {
         >
           <StyledTitle>Todo List</StyledTitle>
 
-          {/* 任務 & 日期 */}
+          {/* mission & date */}
           <StyledSearchArea>
             <InputGroup
               name="title"
@@ -116,17 +140,27 @@ function App() {
           <StyledTodoListArea>
             <TodoList
               todos={todos} //
-              onOpenDialog={openDialog}
+              onOpenDialog={openDeleteDialog} //
+              onEditDialog={openEditDialog} //
             />
           </StyledTodoListArea>
         </div>
 
         {/* dialog */}
-        <Dialog
-          open={stateDialog} //
-          close={() => setStateDialog(false)} //
+        <DialogDelete
+          open={stateDeleteDialog} //
+          close={() => setStateDeleteDialog(false)} //
           onDelete={handleDelete} //
         />
+
+        {editTodo && (
+          <DialogEdit
+            open={stateEditDialog}
+            close={() => setStateEditDialog(false)}
+            onEdit={handleEdit}
+            value={editTodo}
+          />
+        )}
       </StyledWrapper>
     </div>
   );
