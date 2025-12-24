@@ -73,6 +73,14 @@ const StyledTodoListArea = styled.div`
         border: 1px solid #d9d9d9;
         margin-right: 14px;
       }
+      input[type="checkbox"]:checked + .todoContent {
+        color: rgba(74, 74, 74, 0.5);
+      }
+
+      input[type="checkbox"]:checked + .todoContent p {
+        text-decoration: line-through;
+      }
+
       div.todoContent {
         algin-items: flex-start;
         &.checked {
