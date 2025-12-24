@@ -34,6 +34,7 @@ const StyledInputGroup = styled.div`
     white-space: nowrap;
   }
   input {
+    max-width: 375px;
     padding: 12px 20px;
     border-radius: 15px;
     border: 1px solid #ccc;
